@@ -15,4 +15,5 @@ struct Server {
 struct API {
     
     static let photoList: String = "/photos"
+    static let searchPhoto: String = "/search/photos"
 }

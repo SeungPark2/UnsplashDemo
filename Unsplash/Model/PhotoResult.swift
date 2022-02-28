@@ -7,6 +7,17 @@
 
 import Foundation
 
+struct PhotoResult: Codable {
+    
+    let total: Int?
+    let photos: [Photo]
+    
+    enum CodingKeys: String, CodingKey {
+        
+        case total, photos = "results"
+    }
+}
+
 struct Photo: Codable {
     
     let id: String

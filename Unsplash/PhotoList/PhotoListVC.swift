@@ -10,22 +10,41 @@ import UIKit
 
 class PhotoListVC: UIViewController {
 
+    // MARK: -- Public Properties
+    
+    // MARK: -- Public Method
+    
+    // MARK: -- Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.bindState(with: self.viewModel)
-        
-        viewModel.requestPhotos()
-        
-            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-            self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.setNavigationBar()
     }
+    
+    private func setNavigationBar() {
+        
+        self.navigationController?
+            .navigationBar
+            .setBackgroundImage(UIImage(),
+                                for: UIBarMetrics.default)
+        self.navigationController?
+            .navigationBar
+            .shadowImage = UIImage()
+    }
+    
+    // MARK: -- Private Method
     
     private func bindState(with viewModel: PhotoListVMProtocol) {
         
         viewModel.isLoaded
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
+                
+                $0 ? self?.loadingIndicatorView?.stopAnimating() :
+                     self?.loadingIndicatorView?.startAnimating()
+                self?.loadingIndicatorView?.isHidden = $0
                 
                 if $0 { self?.photoTableView?.reloadData() }
             }
@@ -41,11 +60,20 @@ class PhotoListVC: UIViewController {
             .store(in: &self.cancellable)
     }
     
+    // MARK: -- Private Properties
+    
     private let viewModel: PhotoListVMProtocol = PhotoListVM()
     private var cancellable = Set<AnyCancellable>()
+    private let refreshControl = UIRefreshControl()
+    
+    // MARK: -- IBOutlet
     
     @IBOutlet private weak var photoTableView: UITableView?
+    
+    @IBOutlet private weak var loadingIndicatorView: UIActivityIndicatorView?
 }
+
+// MARK: -- UITableViewDelegate, UITableViewDataSource
 
 extension PhotoListVC: UITableViewDelegate,
                        UITableViewDataSource {
@@ -59,13 +87,14 @@ extension PhotoListVC: UITableViewDelegate,
     func tableView(_ tableView: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        guard let width = self.viewModel.photos[safe: indexPath.row]?.width,
-              let height = self.viewModel.photos[safe: indexPath.row]?.height else {
+        guard let photoWidth = self.viewModel.photos[safe: indexPath.row]?.width,
+              let photoHeight = self.viewModel.photos[safe: indexPath.row]?.height
+        else {
                   
             return 200
         }
         
-        return self.view.frame.width * (CGFloat(height) / CGFloat(width))
+        return self.view.frame.width * (CGFloat(photoHeight) / CGFloat(photoWidth))
     }
     
     func tableView(_ tableView: UITableView,
@@ -73,7 +102,8 @@ extension PhotoListVC: UITableViewDelegate,
      
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PhotoCell.identifier,
                                                        for: indexPath) as? PhotoCell,
-              let photo = self.viewModel.photos[safe: indexPath.row] else {
+              let photo = self.viewModel.photos[safe: indexPath.row]
+        else {
             
             return UITableViewCell()
         }
@@ -89,7 +119,8 @@ extension PhotoListVC: UITableViewDelegate,
         if let photoDetailVC = storyboard?.instantiateViewController(withIdentifier: "PhotoDetailVC") as? PhotoDetailVC {
             
             photoDetailVC.selectedIndex = indexPath.row
-            photoDetailVC.photos = viewModel.photos
+            photoDetailVC.photos = self.viewModel.photos
+            photoDetailVC.photoDetailDelegate = self
             
             photoDetailVC.modalPresentationStyle = .fullScreen
             
@@ -126,13 +157,15 @@ extension PhotoListVC: UITableViewDelegate,
     }
 }
 
+// MARK: -- PhotoDetailDelegate
+
 extension PhotoListVC: PhotoDetailDelegate {
     
     func photoDetailImageMove(with index: Int) {
         
         self.photoTableView?.scrollToRow(at: IndexPath(row: index,
                                                        section: 0),
-                                         at: .top,
+                                         at: .middle,
                                          animated: false)
     }
 }

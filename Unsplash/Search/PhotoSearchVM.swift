@@ -1,42 +1,51 @@
 //
-//  PhotoListVM.swift
-//  Kakaopay
+//  PhotoSearchVM.swift
+//  Unsplash
 //
-//  Created by 박승태 on 2022/02/25.
+//  Created by 박승태 on 2022/02/27.
 //
 
 import Combine
 import Foundation
 
-protocol PhotoListVMProtocol {
+protocol PhotoSearchVMProtocl {
     
     var isLoaded: CurrentValueSubject<Bool, Never> { get }
     var errMsg: CurrentValueSubject<String, Never> { get }
     
-    var photos: [Photo] { get }
+    var resultPhotos: [Photo] { get }
     
+    func typing(with searchWord: String)
     func requestPhotos()
 }
 
-class PhotoListVM: PhotoListVMProtocol {
+class PhotoSearchVM: PhotoSearchVMProtocl {
     
     // MARK: -- Public Properties
     
     var isLoaded = CurrentValueSubject<Bool, Never>(true)
     var errMsg = CurrentValueSubject<String, Never>("")
-    
-    var photos = [Photo]()
+        
+    var resultPhotos = [Photo]()
     
     // MARK: -- Public Method
     
-    init() {
+    func typing(with searchWord: String) {
         
-        self.requestPhotos()
+        self.searchWord = searchWord
+        
+        if searchWord.isEmpty,
+           !self.resultPhotos.isEmpty {
+            
+            self.resultPhotos.removeAll()
+            self.isLoaded.send(true)
+        }
     }
     
     func requestPhotos() {
         
         guard self.isLoaded.value,
+              self.searchWord != "",
               let nextPage = self.photoListNextPage
         else {
             
@@ -45,8 +54,10 @@ class PhotoListVM: PhotoListVMProtocol {
         
         self.isLoaded.send(false)
         
-        Network.shared.requestGet(with: API.photoList,
-                                  queries: ["page": nextPage, // default per_page = 10
+        Network.shared.requestGet(with: API.searchPhoto,
+                                  queries: ["page": nextPage,
+                                            "per_page": 20,
+                                            "query": self.searchWord,
                                             "client_id": ""])
             .map { [weak self] in
                 
@@ -54,7 +65,7 @@ class PhotoListVM: PhotoListVMProtocol {
                 
                 return $0.data
             }
-            .decode(type: [Photo].self, decoder: JSONDecoder())
+            .decode(type: PhotoResult.self, decoder: JSONDecoder())
             .sink(receiveCompletion: { [weak self] completion in
                 
                 switch completion {
@@ -72,9 +83,9 @@ class PhotoListVM: PhotoListVMProtocol {
                     case .finished: break
                 }
                 
-            }, receiveValue: { [weak self] photoList in
+            }, receiveValue: { [weak self] photoResult in
                 
-                self?.photos = (self?.photos ?? []) + photoList
+                self?.resultPhotos = (self?.resultPhotos ?? []) + photoResult.photos
                 
                 self?.isLoaded.send(true)
             })
@@ -85,6 +96,7 @@ class PhotoListVM: PhotoListVMProtocol {
     
     // MARK: -- Private Properties
     
+    private var searchWord: String = ""
     private var photoListNextPage: Int? = 1
     private var cancellable = Set<AnyCancellable>()
 }

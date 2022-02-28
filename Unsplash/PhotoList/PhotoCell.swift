@@ -13,7 +13,8 @@ class PhotoCell: UITableViewCell {
     
     func updateUI(with photo: Photo) {
         
-        let height = UIScreen.main.bounds.width * (CGFloat(photo.height ?? 0) / CGFloat(photo.width ?? 1))
+        let height = UIScreen.main.bounds.width *
+                     (CGFloat(photo.height ?? 0) / CGFloat(photo.width ?? 1))
         
         self.photoImageView?.downloadedFrom(link: photo.urls.regular,
                                             size: CGSize(width: UIScreen.main.bounds.width,

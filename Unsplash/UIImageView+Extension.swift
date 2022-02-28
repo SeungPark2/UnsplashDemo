@@ -54,8 +54,23 @@ public extension UIImageView {
             print("Download image success \(url)")
             
             guard let size = size,
-                  let resizeImage = image.resize(size: size) else {
+                  let resizeImage = image.resize(size: size)
+            else {
                 
+                Cache.imageCache.setObject(image,
+                                           forKey: url.absoluteString as NSString)
+                
+                DispatchQueue.main.async() {
+                    
+                    UIView.transition(with: self ?? UIImageView(),
+                                      duration: 0.15,
+                                      options: .transitionCrossDissolve) {
+                        
+                        self?.image = image
+                        self?.accessibilityIdentifier = self?.image?.accessibilityIdentifier
+                        
+                    }
+                }
                 return
             }
                                                  
