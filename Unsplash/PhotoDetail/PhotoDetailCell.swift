@@ -19,11 +19,21 @@ class PhotoDetailCell: UICollectionViewCell {
         
         self.photoImageView?.downloadedFrom(link: photo.urls.regular)
         
-        self.photoImageViewHeight?.constant = self.frame.width *
-                                              (CGFloat(photo.height!) / CGFloat(photo.width!))
+        let imageHeight: CGFloat = self.frame.width * (CGFloat(photo.height ?? 1) / CGFloat(photo.width ?? 1))
+        
+        self.photoImageViewTop?.constant = (self.frame.height - imageHeight) / 2
+        
+        self.photoImageViewHeight?.constant = imageHeight
     }
     
     // MARK: -- awakeFromNib
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.scrollView?.setZoomScale(0,
+                                      animated: false)
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -42,7 +52,11 @@ class PhotoDetailCell: UICollectionViewCell {
     @IBOutlet private weak var photoImageView: UIImageView?
     
     @IBOutlet private weak var photoImageViewHeight: NSLayoutConstraint?
-    @IBOutlet private weak var photoImageViewCenterY: NSLayoutConstraint?
+    
+    @IBOutlet private weak var photoImageViewLeading: NSLayoutConstraint?
+    @IBOutlet private weak var photoImageViewTrailing: NSLayoutConstraint?
+    
+    @IBOutlet private weak var photoImageViewTop: NSLayoutConstraint?
 }
 
 // MARK: -- UIScrollViewDelegate
@@ -55,9 +69,10 @@ extension PhotoDetailCell: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-
-        scrollView.isScrollEnabled = scrollView.zoomScale == 1
         
-        self.photoImageViewCenterY?.constant = -(5 * scrollView.zoomScale)
+        guard let imageView = self.photoImageView else { return }
+        
+        let xOffset = max(0, (self.bounds.size.height - imageView.frame.height) / 2)
+        self.photoImageViewTop?.constant = xOffset
     }
 }

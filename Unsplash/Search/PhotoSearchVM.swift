@@ -12,6 +12,7 @@ protocol PhotoSearchVMProtocl {
     
     var isLoaded: CurrentValueSubject<Bool, Never> { get }
     var errMsg: CurrentValueSubject<String, Never> { get }
+    var isEmptyPhotos: CurrentValueSubject<Bool, Never>{ get}
     
     var resultPhotos: [Photo] { get }
     
@@ -25,6 +26,7 @@ class PhotoSearchVM: PhotoSearchVMProtocl {
     
     var isLoaded = CurrentValueSubject<Bool, Never>(true)
     var errMsg = CurrentValueSubject<String, Never>("")
+    var isEmptyPhotos = CurrentValueSubject<Bool, Never>(false)
         
     var resultPhotos = [Photo]()
     
@@ -86,6 +88,7 @@ class PhotoSearchVM: PhotoSearchVMProtocl {
             }, receiveValue: { [weak self] photoResult in
                 
                 self?.resultPhotos = (self?.resultPhotos ?? []) + photoResult.photos
+                self?.isEmptyPhotos.send(self?.resultPhotos.isEmpty ?? false)
                 
                 self?.isLoaded.send(true)
             })

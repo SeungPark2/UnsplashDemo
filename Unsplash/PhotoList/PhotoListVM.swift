@@ -15,6 +15,7 @@ protocol PhotoListVMProtocol {
     
     var photos: [Photo] { get }
     
+    func refreshPhotos()
     func requestPhotos()
 }
 
@@ -34,12 +35,20 @@ class PhotoListVM: PhotoListVMProtocol {
         self.requestPhotos()
     }
     
+    func refreshPhotos() {
+        
+        self.photoListNextPage = 1
+        self.photos.removeAll()
+        self.requestPhotos()
+    }
+    
     func requestPhotos() {
         
         guard self.isLoaded.value,
               let nextPage = self.photoListNextPage
         else {
             
+            self.isLoaded.send(true)
             return
         }
         

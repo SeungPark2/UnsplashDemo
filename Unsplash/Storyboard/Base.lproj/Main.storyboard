@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="200" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="gUR-aq-2Wc">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="200" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="gUR-aq-2Wc">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -162,6 +162,12 @@
                                     <outlet property="delegate" destination="6FW-WH-zpX" id="pPf-o6-9ss"/>
                                 </connections>
                             </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="검색 결과가 없습니다." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="awn-9g-6RI">
+                                <rect key="frame" x="130" y="437.5" width="154.5" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eAB-Op-Vpn"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -169,10 +175,12 @@
                             <constraint firstItem="eSX-hY-2EJ" firstAttribute="top" secondItem="eAB-Op-Vpn" secondAttribute="top" id="4MT-wR-95y"/>
                             <constraint firstItem="7iA-vP-Z5a" firstAttribute="centerX" secondItem="S3B-TJ-z1M" secondAttribute="centerX" id="Ebl-7L-ujU"/>
                             <constraint firstItem="QH6-m3-Zpc" firstAttribute="leading" secondItem="eAB-Op-Vpn" secondAttribute="leading" id="Gdc-k4-gb7"/>
+                            <constraint firstItem="awn-9g-6RI" firstAttribute="centerX" secondItem="S3B-TJ-z1M" secondAttribute="centerX" id="VTn-n5-IJf"/>
                             <constraint firstItem="eAB-Op-Vpn" firstAttribute="bottom" secondItem="QH6-m3-Zpc" secondAttribute="bottom" id="Win-Tn-aLQ"/>
                             <constraint firstAttribute="trailing" secondItem="eSX-hY-2EJ" secondAttribute="trailing" id="fFt-Tl-8zm"/>
                             <constraint firstItem="eSX-hY-2EJ" firstAttribute="leading" secondItem="eAB-Op-Vpn" secondAttribute="leading" id="fIc-QP-3wc"/>
                             <constraint firstItem="7iA-vP-Z5a" firstAttribute="centerY" secondItem="S3B-TJ-z1M" secondAttribute="centerY" id="keb-t4-PTj"/>
+                            <constraint firstItem="awn-9g-6RI" firstAttribute="centerY" secondItem="S3B-TJ-z1M" secondAttribute="centerY" id="l0s-e0-x5j"/>
                             <constraint firstItem="QH6-m3-Zpc" firstAttribute="top" secondItem="eSX-hY-2EJ" secondAttribute="bottom" id="pit-mY-67h"/>
                             <constraint firstItem="eAB-Op-Vpn" firstAttribute="trailing" secondItem="QH6-m3-Zpc" secondAttribute="trailing" id="q4k-qR-p9L"/>
                         </constraints>
@@ -181,6 +189,7 @@
                     <connections>
                         <outlet property="loadingIndicatorView" destination="7iA-vP-Z5a" id="fne-ct-e3g"/>
                         <outlet property="photoCollectionView" destination="QH6-m3-Zpc" id="wzn-dq-dob"/>
+                        <outlet property="resultEmptyLabel" destination="awn-9g-6RI" id="gzc-oC-7qz"/>
                         <outlet property="searchBar" destination="eSX-hY-2EJ" id="6Nd-sh-jfr"/>
                     </connections>
                 </viewController>
@@ -198,6 +207,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
@@ -266,60 +276,39 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A36-wy-vKr">
-                                <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="barTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <textAttributes key="titleTextAttributes">
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </textAttributes>
-                                <items>
-                                    <navigationItem title="유저 이름" id="1Ss-Ji-eeK">
-                                        <barButtonItem key="leftBarButtonItem" image="xmark" catalog="system" id="08c-VB-qAY">
-                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <connections>
-                                                <action selector="didTapClose" destination="Uv5-QR-Gaj" id="vRm-YD-KJ2"/>
-                                            </connections>
-                                        </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="pX6-2T-Kd6">
-                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3wf-a5-FSg">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="zar-dV-QNR">
-                                    <size key="itemSize" width="414" height="289"/>
+                                    <size key="itemSize" width="414" height="896"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoDetailCell" id="hx0-Zc-SL2" customClass="PhotoDetailCell" customModule="Unsplash" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="289"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="3Pi-Mj-pQ2">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="289"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EhF-Xg-MOR">
-                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="289"/>
+                                                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="EhF-Xg-MOR">
+                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ntf-c0-obN">
-                                                            <rect key="frame" x="0.0" y="44.5" width="414" height="200"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="414" height="200"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="200" id="c1m-Vl-Lpj"/>
+                                                                <constraint firstAttribute="height" constant="200" id="FXi-JR-YsY"/>
                                                             </constraints>
                                                         </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstItem="ntf-c0-obN" firstAttribute="leading" secondItem="EhF-Xg-MOR" secondAttribute="leading" id="13g-GN-4M4"/>
-                                                        <constraint firstItem="ntf-c0-obN" firstAttribute="centerY" secondItem="EhF-Xg-MOR" secondAttribute="centerY" id="88p-PD-jMR"/>
-                                                        <constraint firstAttribute="bottom" secondItem="ntf-c0-obN" secondAttribute="bottom" constant="1" id="GXD-Kg-JJX"/>
+                                                        <constraint firstItem="ntf-c0-obN" firstAttribute="top" secondItem="EhF-Xg-MOR" secondAttribute="top" id="XOq-4x-8m2"/>
                                                         <constraint firstItem="ntf-c0-obN" firstAttribute="width" secondItem="EhF-Xg-MOR" secondAttribute="width" id="hRy-8N-kLS"/>
+                                                        <constraint firstAttribute="bottom" secondItem="ntf-c0-obN" secondAttribute="bottom" id="his-Mw-VEk"/>
                                                         <constraint firstAttribute="trailing" secondItem="ntf-c0-obN" secondAttribute="trailing" id="kbr-KI-OxM"/>
                                                     </constraints>
                                                     <connections>
@@ -336,10 +325,13 @@
                                             </constraints>
                                         </collectionViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <size key="customSize" width="414" height="896"/>
                                         <connections>
                                             <outlet property="photoImageView" destination="ntf-c0-obN" id="kER-An-d3w"/>
-                                            <outlet property="photoImageViewCenterY" destination="88p-PD-jMR" id="aeJ-ma-XMz"/>
-                                            <outlet property="photoImageViewHeight" destination="c1m-Vl-Lpj" id="7Hw-8y-RBE"/>
+                                            <outlet property="photoImageViewHeight" destination="FXi-JR-YsY" id="TAL-tQ-i8U"/>
+                                            <outlet property="photoImageViewLeading" destination="13g-GN-4M4" id="xyK-EN-PNE"/>
+                                            <outlet property="photoImageViewTop" destination="XOq-4x-8m2" id="Icj-LT-clk"/>
+                                            <outlet property="photoImageViewTrailing" destination="kbr-KI-OxM" id="2Ul-Bv-dyy"/>
                                             <outlet property="scrollView" destination="EhF-Xg-MOR" id="Pzk-uN-jZ0"/>
                                         </connections>
                                     </collectionViewCell>
@@ -349,6 +341,24 @@
                                     <outlet property="delegate" destination="Uv5-QR-Gaj" id="GcV-8m-eE8"/>
                                 </connections>
                             </collectionView>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A36-wy-vKr">
+                                <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="barTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <textAttributes key="titleTextAttributes">
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </textAttributes>
+                                <items>
+                                    <navigationItem title="유저 이름" id="1Ss-Ji-eeK">
+                                        <barButtonItem key="leftBarButtonItem" image="xmark" catalog="system" id="08c-VB-qAY">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <connections>
+                                                <action selector="didTapClose" destination="Uv5-QR-Gaj" id="vRm-YD-KJ2"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Wb5-5s-dgG"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

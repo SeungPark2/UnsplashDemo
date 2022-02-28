@@ -46,6 +46,8 @@ class PhotoSearchVC: UIViewController {
         let layout = photoCollectionView?.collectionViewLayout as? CustomLayout
         layout?.delegate = self
         layout?.numberOfColums = 2
+        
+        self.photoCollectionView?.collectionViewLayout.invalidateLayout()
     }
     
     private func bindState(with viewModel: PhotoSearchVMProtocl) {
@@ -70,6 +72,14 @@ class PhotoSearchVC: UIViewController {
                 self?.showAlert(content: $0)
             }
             .store(in: &self.cancellable)
+        
+        viewModel.isEmptyPhotos
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                
+                self?.resultEmptyLabel?.isHidden = !$0
+            }
+            .store(in: &self.cancellable)
     }
     
     // MARK: -- Private Properties
@@ -82,6 +92,7 @@ class PhotoSearchVC: UIViewController {
     @IBOutlet private weak var searchBar: UISearchBar?
     
     @IBOutlet private weak var photoCollectionView: UICollectionView?
+    @IBOutlet private weak var resultEmptyLabel: UILabel?
     
     @IBOutlet private weak var loadingIndicatorView: UIActivityIndicatorView?
 }
@@ -151,10 +162,12 @@ extension PhotoSearchVC: UICollectionViewDelegate,
         
         let transtionY: CGFloat = scrollView.panGestureRecognizer.translation(in: self.view).y
         
-        if transtionY != 0 {
+        if transtionY != 0 &&
+           self.searchBar?.searchTextField.text != "" &&
+           !(self.searchBar?.searchTextField.isEditing ?? true) {
             
             self.tabBarController?.setTabBarHidden(
-                self.searchBar?.searchTextField.text != "" && transtionY < -15,
+                transtionY < -15,
                 animated: true
             )
         }
@@ -176,6 +189,9 @@ extension PhotoSearchVC: UISearchBarDelegate {
                    textDidChange searchText: String) {
         
         self.viewModel.typing(with: searchText)
+        self.resultEmptyLabel?.isHidden = true
+        self.tabBarController?.setTabBarHidden(false,
+                                               animated: true)
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
@@ -195,11 +211,15 @@ extension PhotoSearchVC: UISearchBarDelegate {
         
         searchBar.text = ""
         searchBar.endEditing(true)
+        self.tabBarController?.setTabBarHidden(false,
+                                               animated: true)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
         searchBar.endEditing(true)
+        self.photoCollectionView?.setContentOffset(.zero,
+                                                   animated: true)
         self.viewModel.requestPhotos()
     }
 }

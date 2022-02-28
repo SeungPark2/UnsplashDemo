@@ -29,10 +29,8 @@ class PhotoDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
                         
-        self.view.bringSubviewToFront(self.navigationBar!)
-        
-        self.downSwipeGesture?.addTarget(self,
-                                         action: #selector(self.didTapClose))
+        self.setNavigationBar()
+        self.addSwipeAction()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -66,6 +64,14 @@ class PhotoDetailVC: UIViewController {
             .shadowImage = UIImage()
         
         self.navigationBar?.topItem?.title = self.photos[selectedIndex].user.name
+    }
+    
+    private func addSwipeAction() {
+        
+        self.downSwipeGesture?.addTarget(
+            self,
+            action: #selector(self.didTapClose)
+        )
     }
         
     @objc
@@ -122,19 +128,20 @@ extension PhotoDetailVC: UICollectionViewDelegate,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         return CGSize(width: collectionView.frame.width,
-                      height: collectionView.frame.height - 1)
+                      height: collectionView.frame.height)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         guard let collectionView = self.photoCollectionView else { return }
         
-        for cell in collectionView.visibleCells {
-            
-            let indexPath = collectionView.indexPath(for: cell)
-            
-            self.navigationBar?.topItem?.title = self.photos[indexPath?.row ?? selectedIndex].user.name
-            self.currentIndex = indexPath?.row ?? self.selectedIndex
-        }
+        let visibleRect = CGRect(origin: collectionView.contentOffset,
+                                 size: collectionView.bounds.size)
+        let visiblePoint = CGPoint(x: visibleRect.midX,
+                                   y: visibleRect.midY)
+        let indexPath = collectionView.indexPathForItem(at: visiblePoint)
+        
+        self.navigationBar?.topItem?.title = self.photos[indexPath?.row ?? self.selectedIndex].user.name
+        self.currentIndex = indexPath?.row ?? self.selectedIndex
     }
 }

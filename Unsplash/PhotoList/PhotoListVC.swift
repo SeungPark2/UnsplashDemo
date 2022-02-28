@@ -21,6 +21,7 @@ class PhotoListVC: UIViewController {
 
         self.bindState(with: self.viewModel)
         self.setNavigationBar()
+        self.addRefreshControl()
     }
     
     private func setNavigationBar() {
@@ -32,6 +33,15 @@ class PhotoListVC: UIViewController {
         self.navigationController?
             .navigationBar
             .shadowImage = UIImage()
+    }
+    
+    private func addRefreshControl() {
+        
+        self.refreshControl.tintColor = .white
+        self.refreshControl.addTarget(self,
+                                      action: #selector(self.refreshPhotos),
+                                      for: .valueChanged)
+        self.photoTableView?.addSubview(self.refreshControl)
     }
     
     // MARK: -- Private Method
@@ -46,7 +56,11 @@ class PhotoListVC: UIViewController {
                      self?.loadingIndicatorView?.startAnimating()
                 self?.loadingIndicatorView?.isHidden = $0
                 
-                if $0 { self?.photoTableView?.reloadData() }
+                if $0 {
+                    
+                    self?.photoTableView?.reloadData()
+                    self?.refreshControl.endRefreshing()
+                }
             }
             .store(in: &self.cancellable)
         
@@ -58,6 +72,13 @@ class PhotoListVC: UIViewController {
                 self?.showAlert(content: $0)
             }
             .store(in: &self.cancellable)
+    }
+    
+    @objc
+    private func refreshPhotos() {
+        
+        self.viewModel.refreshPhotos()
+        self.loadingIndicatorView?.isHidden = true
     }
     
     // MARK: -- Private Properties
